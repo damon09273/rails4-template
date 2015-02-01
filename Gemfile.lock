@@ -159,6 +159,7 @@ GEM
     connection_pool (2.2.0)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
+    crummy (1.8.0)
     dalli (2.7.4)
     debug_inspector (0.0.2)
     devise (3.5.2)
@@ -540,6 +541,7 @@ DEPENDENCIES
   carrierwave_backgrounder
   coffee-rails (~> 4.0.0)
   connection_pool
+  crummy
   dalli
   devise
   devise-async

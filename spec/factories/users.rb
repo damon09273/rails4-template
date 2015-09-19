@@ -21,6 +21,7 @@
 #  created_at             :datetime
 #  updated_at             :datetime
 #  admin                  :boolean          default(FALSE)
+#  avatar                 :string
 #
 
 FactoryGirl.define do
@@ -38,9 +39,8 @@ FactoryGirl.define do
       confirmed_at nil
     end
 
-    factory :creating_user do
-      admin "0"
-      confirmed_at nil
+    factory :user_with_avatar do
+      avatar{ File.open("#{Rails.root}/spec/fixtures/5fpro.png") }
     end
   end
 end

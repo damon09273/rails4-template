@@ -6,12 +6,15 @@ module RequestClient
 
   def signin_user(user = nil)
     user ||= FactoryGirl.create(:admin_user)
-    data = 
     post "/users/sign_in", user: { email: user.email, password: user.password }
     @current_user = user if response.status == 302
   end
 
   def current_user
     @current_user
+  end
+
+  def file_data
+    fixture_file_upload("spec/fixtures/5fpro.png", "image/png")
   end
 end

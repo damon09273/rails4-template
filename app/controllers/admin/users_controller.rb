@@ -3,9 +3,11 @@ class Admin::UsersController < Admin::BaseController
   before_filter(except: [:index]){ add_crumb("Users", admin_users_path) }
 
   def index
-    @users = User.all.page(params[:page]).per(10)
     @admin_page_title = "Users"
     add_crumb @admin_page_title, "#"
+    @q = Admin::User.ransack(params[:q])
+    @users = @q.result.order("id DESC").page(params[:page]).per(30)
+    respond_with @users
   end
 
   def show
@@ -27,7 +29,9 @@ class Admin::UsersController < Admin::BaseController
     if user.save
       redirect_to admin_user_path(user), flash: { success: "user created" }
     else
-      render :new, flash: { error: user.errors.full_messages }
+      new()
+      flash.now[:error] = user.errors.full_messages
+      render :new
     end
   end
 
@@ -35,7 +39,9 @@ class Admin::UsersController < Admin::BaseController
     if user.update_attributes(user_params)
       redirect_to admin_user_path(user), flash: { success: "user updated" }
     else
-      render :edit, flash: { error: user.errors.full_messages }
+      edit()
+      flash.now[:error] = user.errors.full_messages
+      render :edit
     end
   end
 
@@ -54,6 +60,6 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def user_params
-    params.fetch(:user, {}).permit(:name, :email, :password, :admin)
+    params.fetch(:user, {}).permit(:name, :email, :password, :admin, :avatar, :remove_avatar)
   end
 end

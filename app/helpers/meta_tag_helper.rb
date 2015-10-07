@@ -1,38 +1,90 @@
 module MetaTagHelper
-  def set_meta(data = {})
-    url = data[:url] || url_for(params.merge(host: Setting.host))
-    data[:title] ||= default_meta[:title]
-    data[:description] ||= default_meta[:description]
-    data[:keywords] ||= default_meta[:keywords]
-    data[:site] ||= default_meta[:site]
-    data[:og] = {
-      title:       (data[:title] || data[:site]),
-      description: data[:description],
-      url:         url,
-      type:        data[:og_type] || default_meta[:og_type]
-    }
-    data[:fb] = {
-      app_id: default_meta[:fb_app_id],
-      admins: default_meta[:fb_admin_ids]
-    }
-    data[:og][:image] = data[:image] if data[:image]
-    set_meta_tags(data.merge(
-      reverse:   default_meta[:reverse],
-      separator: default_meta[:separator],
-      canonical: url
-    ))
+  def render *args
+    if render_except(args)
+      # 包含 namespace 判斷
+      # EX1: PostsController#press => meta_for_posts_press
+      # EX2: Admin::FlagsController#show => meta_for_admin_flags_show
+      method_name = use_method_name
+      meta_data = self.respond_to?(method_name) ? send(method_name) : nil
+      set_meta(meta_data) if meta_data
+    end
+    super
   end
 
-  def default_meta
-    { title: "My app",
-      description: "5Fpro awesome!",
-      keywords: "5fpro",
-      fb_app_id: "12341234",
-      fb_admin_ids: "1234,123",
+  # 使用的 method_name 組合結構
+  def use_method_name
+    "meta_for_#{controller_path.underscore.gsub(/\//, '_')}_#{action_name}"
+  end
+
+  # 排除 render
+  # - 使用 partial 的情況
+  def render_except(args)
+    !(args.present? ? args.at(0)[:partial].present? : false)
+  end
+
+  # =======================
+  # meta結構
+  def default_meta_makeup
+    {
+      title: nil,
+      description: nil,
+      keywords: nil,
+      site: nil,
+      og: {
+        title: nil,
+        description: nil,
+        url: nil,
+        type: nil,
+        image: nil,
+      },
+      fb: {
+        app_id: nil,
+        admins: nil,
+      },
       separator: " | ",
       reverse: true,
-      og_type: "website",
-      site: "5Fpro"
+      url: nil,
     }
   end
+
+  # 預設值控制
+  def set_meta(data = {})
+    meta = {}
+    meta[:url] ||= url_for(params.merge(:host => Setting.host))
+    meta[:title] ||= data.fetch(:title, page_title_use)
+    meta[:og] = {}
+    meta[:og][:url] ||= data.fetch(:og_url, "")
+    meta[:og][:title] ||= data.fetch(:og_title, "")
+    meta[:og][:description] ||= data.fetch(:og_description, "")
+    meta[:og][:image] ||= data.fetch(:og_image, "")
+
+    set_meta_tags default_meta_makeup.deep_merge(meta)
+  end
+
+  # =======================
+  # asset_path for image
+  def asset_img(img, use_SSL = nil)
+    prefix = use_SSL.nil? ? request.scheme.to_s : use_SSL.present? ? "https" : "http"
+    prefix + ":" + ActionController::Base.helpers.asset_path(img)
+  end
+
+  # =======================
+  # 使用 I18n 的 title 設定
+  def page_title_use
+    I18n.t "title.#{controller_path.underscore.gsub(/\//, '.')}.#{action_name}", { :default => :"title.default" }
+  end
+
+  # =======================
+  # 沒設定的頁面用這個 & 基礎資料
+  def meta_for_default
+    {
+      og_description: "aaaaa",
+      og_image: "",
+    }
+  end
+
+  def meta_for_base_index
+    meta_for_default
+  end
+
 end

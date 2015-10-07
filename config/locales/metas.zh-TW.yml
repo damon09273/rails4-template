@@ -1,0 +1,7 @@
+zh-TW:
+  title:
+    default: "rails4-template web site"
+    base:
+      index: "base_index - rails4-template web site"
+    admin:
+      xxx: "測試"

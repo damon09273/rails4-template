@@ -1,7 +1,7 @@
 module HtmlMatchers
   def response_meta(matchers_hash)
     match_meta = {}
-    matchers_hash.each |k, v|
+    matchers_hash.each do |k, v|
       case k
       when "title"
         match_meta[k] = response_meta_title.to_s.match(v).present?

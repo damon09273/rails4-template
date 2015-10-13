@@ -1,25 +1,16 @@
 module MetaTagHelper
+
+  # 包含 namespace 判斷
+  # EX1: PostsController#press => meta_for_posts_press
+  # EX2: Admin::FlagsController#show => meta_for_admin_flags_show
   def render *args
-    if render_except(args)
-      # 包含 namespace 判斷
-      # EX1: PostsController#press => meta_for_posts_press
-      # EX2: Admin::FlagsController#show => meta_for_admin_flags_show
-      method_name = use_method_name
-      meta_data = self.respond_to?(method_name) ? send(method_name) : nil
-      set_meta(meta_data) if meta_data
-    end
+    set_meta(send(use_method_name)) if respond_to?(use_method_name)
     super
   end
 
   # 使用的 method_name 組合結構
   def use_method_name
     "meta_for_#{controller_path.underscore.gsub(/\//, '_')}_#{action_name}"
-  end
-
-  # 排除 render
-  # - 使用 partial 的情況
-  def render_except(args)
-    !(args.present? ? args.at(0)[:partial].present? : false)
   end
 
   # =======================

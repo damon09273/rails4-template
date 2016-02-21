@@ -24,7 +24,7 @@ class Site < ActiveRecord::Base
 
   def generate_subdomain
     name = SecureRandom.uuid.to_s[0, 5]
-    while(Site.where(subdomain: name).count > 0)
+    while Site.where(subdomain: name).count > 0
       name = SecureRandom.uuid.to_s[0, 5]
     end
     self.subdomain = name

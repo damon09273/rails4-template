@@ -1,6 +1,13 @@
 require 'sidekiq/web'
+require 'subdomain'
+
 Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
+
+  constraints(Subdomain) do
+   get '/' => 'sites#show'
+   resources :sites
+  end
 
   devise_for :users
   get "/authorizations/:provider/callback", to: "authorizations#callback"
@@ -24,4 +31,7 @@ Rails.application.routes.draw do
   end
 
   resources :sites, only: [:show, :edit]
+
+
+
 end

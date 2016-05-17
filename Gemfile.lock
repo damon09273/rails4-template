@@ -303,6 +303,7 @@ GEM
     listen (3.0.6)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9.7)
+    local-subdomain (1.0.1)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
     lumberjack (1.0.10)
@@ -589,6 +590,7 @@ DEPENDENCIES
   jquery-rails
   jquery-ui-rails
   kaminari
+  local-subdomain
   meta-tags
   mini_magick
   nested_form

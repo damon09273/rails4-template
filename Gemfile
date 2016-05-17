@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 gem 'rails', '4.2.5.1'
-
+gem 'local-subdomain'
 # DB
 gem 'pg'
 gem 'activerecord-postgis-adapter'

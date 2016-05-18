@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   constraints(Subdomain) do
    get '/' => 'sites#show'
-   resources :sites
+   resources :sites, only: [:show, :edit]
   end
 
   devise_for :users
@@ -30,7 +30,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :sites, only: [:show, :edit]
 
 
 
